@@ -11,6 +11,8 @@ namespace ConnectFour_Server
         public int Id { get; set; }
         public string Name { get; set; }
         public List<Player> Players { get; set; }
-        public string[][] Gameboard { get; set; }
+        public string[,] Gameboard { get; set; }
+
+
     }
 }
