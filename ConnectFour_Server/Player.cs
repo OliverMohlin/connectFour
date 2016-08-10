@@ -43,6 +43,10 @@ namespace ConnectFour_Server
                         message.UserId = Id;
                         UserName = message.MessageData;
                         break;
+                    case Command.Disconnect:
+                        server.DisconnectPlayer(this);
+                        PlayerTcp.Close();
+                        break;
                     default:
                         break;
                 }

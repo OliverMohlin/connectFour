@@ -53,5 +53,10 @@ namespace ConnectFour_Server
             writer.Write(message);
             writer.Flush();
         }
+
+        internal void DisconnectPlayer(Player player)
+        {
+            Players.Remove(player);
+        }
     }
 }
