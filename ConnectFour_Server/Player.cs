@@ -32,7 +32,12 @@ namespace ConnectFour_Server
 
             server.SendMessage(this, "Enter Username");
             Name = new BinaryReader(n).ReadString();
+
+            Message messageJson = Newtonsoft.Json.JsonConvert.DeserializeObject<Message>(Name);
+
             server.SendMessage(this, "Your username is:" + this.Name);
+
+            server.SendMessage(this, messageJson.MessageData);
 
             message = new BinaryReader(n).ReadString();
             Console.WriteLine(message);

@@ -53,10 +53,13 @@ namespace ConnectFour_ConsoleClient
             try
             {
                 NetworkStream serverStream = server.GetStream();
+                Console.WriteLine("Enter your username: ");
+                Message message = new Message();
+                message = SetUserName();
+                SendToServer(serverStream, message);
 
                 while (!playerInput.Equals("quit"))
                 {
-                    Message message = new Message();
                     playerInput = Console.ReadLine();
                     switch (playerInput)
                     {
@@ -73,10 +76,8 @@ namespace ConnectFour_ConsoleClient
                         default:
                             break;
                     }
-                    string messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
-                    BinaryWriter writer = new BinaryWriter(serverStream);
-                    writer.Write(messageJson);
-                    writer.Flush();
+
+                    SendToServer(serverStream, message);
                 }
 
                 server.Close();
@@ -85,6 +86,37 @@ namespace ConnectFour_ConsoleClient
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private static void SendToServer(NetworkStream serverStream, Message message)
+        {
+            string messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+            BinaryWriter writer = new BinaryWriter(serverStream);
+            writer.Write(messageJson);
+            writer.Flush();
+        }
+
+        private Message SetUserName()
+        {
+            Message message = new Message();
+            username = Console.ReadLine();
+            message.CommandType = Command.SetUsername;
+            message.Id = 2; // Todo : fixa det hära
+            message.UserId = -1;
+            message.MessageData = username;
+            message.Sender = username;
+
+            return message;
+        }
+        private void ChangeUserName()
+        {
+            // Todo : Kopia på setusername, ändra så den har userid
+            Message message = new Message();
+            username = Console.ReadLine();
+            message.CommandType = Command.SetUsername;
+            message.Id = 2;
+            message.MessageData = username;
+            message.Sender = username;
         }
 
         private void Listen()
