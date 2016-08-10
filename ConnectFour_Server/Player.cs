@@ -29,27 +29,15 @@ namespace ConnectFour_Server
         {
             string messageJson = "";
             NetworkStream n = PlayerTcp.GetStream();
-
-            while (true)
+            bool running = true;
+            while (running)
             {
 
                 messageJson = new BinaryReader(n).ReadString();
 
                 Message message = Newtonsoft.Json.JsonConvert.DeserializeObject<Message>(messageJson);
 
-                switch (message.CommandType)
-                {
-                    case Command.SetUsername:
-                        message.UserId = Id;
-                        UserName = message.MessageData;
-                        break;
-                    case Command.Disconnect:
-                        server.DisconnectPlayer(this);
-                        PlayerTcp.Close();
-                        break;
-                    default:
-                        break;
-                }
+                running = ParseMessage(running, message);
 
                 if (message.CommandType != Command.Disconnect)
                 {
@@ -58,6 +46,33 @@ namespace ConnectFour_Server
                     server.SendMessage(this, messageJson);
                 }
             }
+            server.DisconnectPlayer(this);
+            PlayerTcp.Close();
+        }
+
+        private bool ParseMessage(bool running, Message message)
+        {
+            switch (message.CommandType)
+            {
+                case Command.SetUsername:
+                    message.UserId = Id;
+                    UserName = message.MessageData;
+                    Console.WriteLine($"Username of {Id} is set to {UserName}");
+                    break;
+                case Command.ChangeUserName:
+                    UserName = message.MessageData;
+                    Console.WriteLine($"Username of {Id} is changed to {UserName}");
+                    break;
+                case Command.Disconnect:
+                    running = false;
+                    Console.WriteLine($"{UserName} ({Id}) is logged out!");
+                    break;
+                  
+                default:
+                    break;
+            }
+
+            return running;
         }
     }
 }

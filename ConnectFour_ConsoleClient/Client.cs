@@ -58,32 +58,11 @@ namespace ConnectFour_ConsoleClient
                 message = SetUserName();
                 SendToServer(serverStream, message);
 
-                while (!playerInput.Equals("4"))
+                while (playerInput != "10")
                 {
                     playerInput = Console.ReadLine();
-                    switch (playerInput)
-                    {
-                        case "1":
-                            message.CommandType = Command.Move;
-                            message.Id = 1;
-                            message.MessageData = "2";
-                            message.Sender = username;
-                            break;
-                        case "2":
 
-                            break;
-
-                        case "4":
-                            message.CommandType = Command.Disconnect;
-                            message.Id = 1;
-                            message.MessageData = "4";
-                            message.Sender = username;
-                            message.UserId = -1;
-                            break;
-
-                        default:
-                            break;
-                    }
+                    CreateMessage(playerInput, message);
 
                     SendToServer(serverStream, message);
                 }
@@ -96,12 +75,53 @@ namespace ConnectFour_ConsoleClient
             }
         }
 
+        private void CreateMessage(string playerInput, Message message)
+        {
+            switch (playerInput)
+            {
+                case "1":
+                    message.CommandType = Command.Move;
+                    message.Id = 1;
+                    message.MessageData = "2";
+                    message.Sender = username;
+                    break;
+                case "4":
+                    Console.WriteLine("Enter new username");
+                    string newUserName = Console.ReadLine();
+                    SetMessage(message, Command.ChangeUserName, newUserName);
+                    //message.CommandType = Command.ChangeUserName;
+                    //message.Id = 1;
+                    //message.MessageData = "";
+                    //message.Sender = username;
+                    break;
+
+                case "10":
+                    message.CommandType = Command.Disconnect;
+                    message.Id = 1;
+                    message.MessageData = "10";
+                    message.Sender = username;
+                    message.UserId = -1;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
         private static void SendToServer(NetworkStream serverStream, Message message)
         {
             string messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
             BinaryWriter writer = new BinaryWriter(serverStream);
             writer.Write(messageJson);
             writer.Flush();
+        }
+        private void SetMessage(Message message,Command commandType, string messageData)
+        {
+            message.CommandType = commandType;
+            message.Id = 1; // todo :
+            message.MessageData = messageData;
+            message.Sender = username;
+            message.UserId = -1; //todo
         }
 
         private Message SetUserName()

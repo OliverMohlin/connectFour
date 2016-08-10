@@ -11,6 +11,7 @@ namespace ConnectFour_Server
         Move = 1,
         SetUsername = 2,
         Message = 3,
-        Disconnect = 4
+        ChangeUserName = 4,
+        Disconnect = 10
     }
 }
