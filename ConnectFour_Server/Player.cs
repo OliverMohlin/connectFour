@@ -20,27 +20,36 @@ namespace ConnectFour_Server
             Id = playerCount++;
 
         }
-        public string Name { get; set; }
+        public string UserName { get; set; }
         public int Id { get; set; }
         public List<Game> Games { get; set; }
         public TcpClient PlayerTcp { get; set; }
 
         internal void Run()
         {
-            string message = "";
+            string messageJson = "";
             NetworkStream n = PlayerTcp.GetStream();
 
-            server.SendMessage(this, "Enter Username");
-            Name = new BinaryReader(n).ReadString();
+            while (true)
+            {
 
-            Message messageJson = Newtonsoft.Json.JsonConvert.DeserializeObject<Message>(Name);
+                messageJson = new BinaryReader(n).ReadString();
 
-            server.SendMessage(this, "Your username is:" + this.Name);
+                Message message = Newtonsoft.Json.JsonConvert.DeserializeObject<Message>(messageJson);
 
-            server.SendMessage(this, messageJson.MessageData);
+                switch (message.CommandType)
+                {
+                    case Command.SetUsername:
+                        message.UserId = Id;
+                        UserName = message.MessageData;
+                        break;
+                    default:
+                        break;
+                }
 
-            message = new BinaryReader(n).ReadString();
-            Console.WriteLine(message);
+                messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+                server.SendMessage(this, messageJson);
+            }
         }
     }
 }
