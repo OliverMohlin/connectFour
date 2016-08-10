@@ -55,7 +55,7 @@ namespace ConnectFour_ConsoleClient
                 NetworkStream serverStream = server.GetStream();
                 Console.WriteLine("Enter your username: ");
                 Message message = new Message();
-                message = SetUserName();
+                message = SetUserName(Command.SetUsername);
                 SendToServer(serverStream, message);
 
                 while (playerInput != "10")
@@ -66,11 +66,12 @@ namespace ConnectFour_ConsoleClient
 
                     SendToServer(serverStream, message);
                 }
-
+                Thread.Sleep(1000);
                 server.Close();
             }
             catch (Exception ex)
             {
+                //Console.WriteLine("nu jävlar");
                 Console.WriteLine(ex.Message);
             }
         }
@@ -87,8 +88,8 @@ namespace ConnectFour_ConsoleClient
                     break;
                 case "4":
                     Console.WriteLine("Enter new username");
-                    string newUserName = Console.ReadLine();
-                    SetMessage(message, Command.ChangeUserName, newUserName);
+                    username = Console.ReadLine();
+                    SetMessage(message, Command.ChangeUserName, username);
                     //message.CommandType = Command.ChangeUserName;
                     //message.Id = 1;
                     //message.MessageData = "";
@@ -115,7 +116,7 @@ namespace ConnectFour_ConsoleClient
             writer.Write(messageJson);
             writer.Flush();
         }
-        private void SetMessage(Message message,Command commandType, string messageData)
+        private void SetMessage(Message message, Command commandType, string messageData)
         {
             message.CommandType = commandType;
             message.Id = 1; // todo :
@@ -124,46 +125,58 @@ namespace ConnectFour_ConsoleClient
             message.UserId = -1; //todo
         }
 
-        private Message SetUserName()
+        private Message SetUserName(Command command)
         {
             Message message = new Message();
             username = Console.ReadLine();
-            message.CommandType = Command.SetUsername;
-            message.Id = 2; // Todo : fixa det hära
-            message.UserId = -1;
-            message.MessageData = username;
-            message.Sender = username;
+            SetMessage(message, command, username);
 
             return message;
-        }
-        private void ChangeUserName()
-        {
-            // Todo : Kopia på setusername, ändra så den har userid
-            Message message = new Message();
-            username = Console.ReadLine();
-            message.CommandType = Command.SetUsername;
-            message.Id = 2;
-            message.MessageData = username;
-            message.Sender = username;
         }
 
         private void Listen()
         {
-            string message = "";
+            string messageJson = "";
 
             try
             {
-                while (true)
+                bool running = true;
+                while (running)
                 {
                     NetworkStream n = server.GetStream();
-                    message = new BinaryReader(n).ReadString();
-                    Console.WriteLine(message);
+                    messageJson = new BinaryReader(n).ReadString();
+                    Message message = Newtonsoft.Json.JsonConvert.DeserializeObject<Message>(messageJson);
+                    running = ParseMessage(running, message);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private bool ParseMessage(bool running, Message message)
+        {
+            switch (message.CommandType)
+            {
+                case Command.SetUsername:
+                    string UserName = message.MessageData;
+                    Console.WriteLine($"Your username is set to {UserName}");
+                    break;
+                case Command.ChangeUserName:
+                    UserName = message.MessageData;
+                    Console.WriteLine($"Your username is changed to {UserName}");
+                    break;
+                case Command.Disconnect:
+                    running = false;
+                    Console.WriteLine($"You are logged out from server!");
+                    break;
+
+                default:
+                    break;
+            }
+
+            return running;
         }
     }
 }

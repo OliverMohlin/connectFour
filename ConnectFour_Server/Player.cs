@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConnectFour_Server
@@ -39,13 +40,12 @@ namespace ConnectFour_Server
 
                 running = ParseMessage(running, message);
 
-                if (message.CommandType != Command.Disconnect)
-                {
-                    messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+                messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
 
-                    server.SendMessage(this, messageJson);
-                }
+                server.SendMessage(this, messageJson);
+
             }
+            Thread.Sleep(1000);
             server.DisconnectPlayer(this);
             PlayerTcp.Close();
         }
@@ -67,7 +67,7 @@ namespace ConnectFour_Server
                     running = false;
                     Console.WriteLine($"{UserName} ({Id}) is logged out!");
                     break;
-                  
+
                 default:
                     break;
             }
