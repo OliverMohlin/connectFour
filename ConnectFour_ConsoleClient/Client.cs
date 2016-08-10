@@ -58,7 +58,7 @@ namespace ConnectFour_ConsoleClient
                 message = SetUserName();
                 SendToServer(serverStream, message);
 
-                while (!playerInput.Equals("quit"))
+                while (!playerInput.Equals("4"))
                 {
                     playerInput = Console.ReadLine();
                     switch (playerInput)
@@ -71,6 +71,14 @@ namespace ConnectFour_ConsoleClient
                             break;
                         case "2":
 
+                            break;
+
+                        case "4":
+                            message.CommandType = Command.Disconnect;
+                            message.Id = 1;
+                            message.MessageData = "4";
+                            message.Sender = username;
+                            message.UserId = -1;
                             break;
 
                         default:

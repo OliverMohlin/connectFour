@@ -51,8 +51,12 @@ namespace ConnectFour_Server
                         break;
                 }
 
-                messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
-                server.SendMessage(this, messageJson);
+                if (message.CommandType != Command.Disconnect)
+                {
+                    messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+
+                    server.SendMessage(this, messageJson);
+                }
             }
         }
     }
