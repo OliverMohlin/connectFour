@@ -33,8 +33,8 @@ namespace ConnectFour_ConsoleClient
             Console.WriteLine($"IP: {localIP}");
             #endregion
 
-            //server = new TcpClient("192.168.220.92", 8080);
-            server = new TcpClient(localIP, 5000);
+            server = new TcpClient("192.168.220.128", 5000);
+            //server = new TcpClient(localIP, 5000);
             Thread listenerThread = new Thread(Listen);
             listenerThread.Start();
 
