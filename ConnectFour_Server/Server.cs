@@ -40,7 +40,7 @@ namespace ConnectFour_Server
                     Thread clientThread = new Thread(newPlayer.Run);
                     clientThread.Start();
 
-                    if (Games.Count()%2 == 0)
+                    if (Games.Count() % 2 == 0)
                     {
                         CreateGame();
                     }
@@ -78,7 +78,7 @@ namespace ConnectFour_Server
 
         }
 
-        public void JoinGame(int id, Player player)
+        public string JoinGame(int id, Player player)
         {
 
             foreach (var item in Games)
@@ -89,12 +89,13 @@ namespace ConnectFour_Server
                     {
                         item.Players.Add(player);
                         player.Games.Add(item);
-                        Console.WriteLine($"{player.UserName} has joined game: {item.Id}");
+                        return $"{player.UserName} has joined game: {item.Id}";
                     }
                     else
-                        Console.WriteLine("To slow, Go home");
+                        return player.UserName + " was To slow, Go home";
                 }
             }
+            return "The game does not exist!";
         }
     }
 }

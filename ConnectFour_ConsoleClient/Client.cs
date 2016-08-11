@@ -151,13 +151,12 @@ namespace ConnectFour_ConsoleClient
             switch (message.CommandType)
             {
                 case Command.SetUsername:
-                    string UserName = message.MessageData;
                     UserId = message.UserId;
-                    Console.WriteLine($"Your username is set to {UserName}");
+                    Console.WriteLine(message.MessageData);
+                    //Console.WriteLine($"Your username is set to {username}");
                     break;
                 case Command.ChangeUserName:
-                    UserName = message.MessageData;
-                    Console.WriteLine($"Your username is changed to {UserName}");
+                    Console.WriteLine($"Your username is changed to {username}");
                     break;
                 case Command.Disconnect:
                     running = false;
