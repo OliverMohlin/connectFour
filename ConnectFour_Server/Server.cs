@@ -40,7 +40,7 @@ namespace ConnectFour_Server
                     Thread clientThread = new Thread(newPlayer.Run);
                     clientThread.Start();
 
-                    if (Games.Count() == 0)
+                    if (Games.Count()%2 == 0)
                     {
                         CreateGame();
                     }
@@ -85,9 +85,14 @@ namespace ConnectFour_Server
             {
                 if (item.Id == id)
                 {
-                    item.Players.Add(player);
-                    player.Games.Add(item);
-                    Console.WriteLine($"{player.UserName} has joined game: {item.Id}");
+                    if (item.Players.Count < 2)
+                    {
+                        item.Players.Add(player);
+                        player.Games.Add(item);
+                        Console.WriteLine($"{player.UserName} has joined game: {item.Id}");
+                    }
+                    else
+                        Console.WriteLine("To slow, Go home");
                 }
             }
         }
