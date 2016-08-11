@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ConnectFour_Server
 {
@@ -13,7 +14,7 @@ namespace ConnectFour_Server
     {
         private Server server;
 
-        public static int playerCount;
+        public static int playerCount = 1;
         public Player(TcpClient playerTcp, Server server)
         {
             this.server = server;
@@ -37,14 +38,24 @@ namespace ConnectFour_Server
 
                 messageJson = new BinaryReader(n).ReadString();
 
-                Message message = Newtonsoft.Json.JsonConvert.DeserializeObject<Message>(messageJson);
+                Message message = JsonConvert.DeserializeObject<Message>(messageJson);
 
                 running = ParseMessage(running, message);
 
-                messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+                messageJson = JsonConvert.SerializeObject(message);
+
+                if (message.CommandType == Command.Move)
+                {
+                    foreach (var player in Games.Last().Players)
+                    {
+                        if (player.Id != this.Id)
+                        {
+                            server.SendMessage(player, messageJson);
+                        }
+                    }
+                }
 
                 server.SendMessage(this, messageJson);
-
             }
             Thread.Sleep(1000);
             server.DisconnectPlayer(this);
@@ -59,7 +70,7 @@ namespace ConnectFour_Server
                     message.UserId = Id;
                     UserName = message.MessageData;
                     Console.WriteLine($"Username of {Id} is set to {UserName}");
-                    message.MessageData = server.JoinGame(server.Games.Last().Id, this);
+                    message.MessageData = JsonConvert.SerializeObject(server.JoinGame(server.Games.Last().Id, this));
                     break;
 
                 case Command.ChangeUserName:
@@ -73,6 +84,7 @@ namespace ConnectFour_Server
                     break;
 
                 case Command.Move:
+                    message.MessageData = JsonConvert.SerializeObject(Games.Last().PlayGame(Convert.ToInt32(message.MessageData), this));
 
                     break;
                 default:

@@ -21,13 +21,18 @@ namespace ConnectFour_Server
 
         public int[,] PlayGame(int x, Player player)
         {
+            int y = Gameboard.GetLength(0) - 1;
+            while (Gameboard[y, x] != 0)
+            {
+                y--;
+            }
 
-            Gameboard[0, x] = player.Id;
+            Gameboard[y, x] = player.Id;
 
             return Gameboard;
         }
 
-     
+
     }
 
 }

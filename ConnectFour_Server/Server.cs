@@ -78,7 +78,7 @@ namespace ConnectFour_Server
 
         }
 
-        public string JoinGame(int id, Player player)
+        public int[,] JoinGame(int id, Player player)
         {
 
             foreach (var item in Games)
@@ -89,13 +89,16 @@ namespace ConnectFour_Server
                     {
                         item.Players.Add(player);
                         player.Games.Add(item);
-                        return $"{player.UserName} has joined game: {item.Id}";
+                        //return $"{player.UserName} has joined game: {item.Id}";
+                        return item.Gameboard;
                     }
-                    else
-                        return player.UserName + " was To slow, Go home";
+                    //else
+                        //return player.UserName + " was To slow, Go home";
+                        
                 }
             }
-            return "The game does not exist!";
+            //return "The game does not exist!";
+            return new int[1,1];
         }
     }
 }
