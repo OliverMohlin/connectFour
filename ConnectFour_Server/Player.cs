@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConnectFour_Server
@@ -29,27 +30,49 @@ namespace ConnectFour_Server
         {
             string messageJson = "";
             NetworkStream n = PlayerTcp.GetStream();
-
-            while (true)
+            bool running = true;
+            while (running)
             {
 
                 messageJson = new BinaryReader(n).ReadString();
 
                 Message message = Newtonsoft.Json.JsonConvert.DeserializeObject<Message>(messageJson);
 
-                switch (message.CommandType)
-                {
-                    case Command.SetUsername:
-                        message.UserId = Id;
-                        UserName = message.MessageData;
-                        break;
-                    default:
-                        break;
-                }
+                running = ParseMessage(running, message);
 
                 messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+
                 server.SendMessage(this, messageJson);
+
             }
+            Thread.Sleep(1000);
+            server.DisconnectPlayer(this);
+            PlayerTcp.Close();
+        }
+
+        private bool ParseMessage(bool running, Message message)
+        {
+            switch (message.CommandType)
+            {
+                case Command.SetUsername:
+                    message.UserId = Id;
+                    UserName = message.MessageData;
+                    Console.WriteLine($"Username of {Id} is set to {UserName}");
+                    break;
+                case Command.ChangeUserName:
+                    UserName = message.MessageData;
+                    Console.WriteLine($"Username of {Id} is changed to {UserName}");
+                    break;
+                case Command.Disconnect:
+                    running = false;
+                    Console.WriteLine($"{UserName} ({Id}) is logged out!");
+                    break;
+
+                default:
+                    break;
+            }
+
+            return running;
         }
     }
 }

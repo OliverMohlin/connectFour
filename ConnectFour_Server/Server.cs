@@ -53,5 +53,34 @@ namespace ConnectFour_Server
             writer.Write(message);
             writer.Flush();
         }
+
+        internal void DisconnectPlayer(Player player)
+        {
+            Players.Remove(player);
+        }
+
+        public Game CreateGame()
+        {
+            Game game = new ConnectFour_Server.Game();
+            Games.Add(game);
+            return game;
+
+        }
+
+        public Game JoinGame(int id, Player player)
+        {
+
+            foreach (var item in Games)
+            {
+                if (item.Id == id)
+                {
+                    item.Players.Add(player);
+                    return item;
+                }
+            }
+            return new Game(); //todo
+        }
+
+
     }
 }
