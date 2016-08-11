@@ -24,7 +24,7 @@ namespace ConnectFour_Server
         public void Run()
         {
             TcpListener listener = new TcpListener(IPAddress.Any, 5000);
-            Console.WriteLine("Seeerver is with us!!");
+            Console.WriteLine("Seeeerver is with us!");
             Players = new List<Player>();
 
             try

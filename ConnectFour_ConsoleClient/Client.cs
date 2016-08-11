@@ -56,15 +56,13 @@ namespace ConnectFour_ConsoleClient
             try
             {
                 NetworkStream serverStream = server.GetStream();
-                Console.WriteLine("Enter your username: ");
                 Message message = new Message();
                 message = SetUserName(Command.SetUsername);
                 SendToServer(serverStream, message);
 
                 while (playerInput != "10")
                 {
-                    playerInput = Console.ReadLine();
-
+                    playerInput = GetPlayerInput("Make a choice (1-10)");
                     CreateMessage(playerInput, message);
 
                     SendToServer(serverStream, message);
@@ -74,9 +72,39 @@ namespace ConnectFour_ConsoleClient
             }
             catch (Exception ex)
             {
-                //Console.WriteLine("nu jävlar");
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private static string GetPlayerInput(string messageToUser)
+        {
+            ClearMenuArea();
+            Console.WriteLine(messageToUser);
+            string playerInput = "";
+            bool notValidInput = true;
+            while (notValidInput)
+            {
+                playerInput = Console.ReadLine();
+                if (playerInput != null && playerInput != "")
+                    notValidInput = false;
+            }
+
+            return playerInput;
+        }
+
+        private static void ClearMenuArea()
+        {
+            Console.SetCursorPosition(0, 0);
+            for (int i = 0; i < 15; i++)
+            {
+                for (int j = 0; j < 50; j++)
+                {
+                    Console.SetCursorPosition(j, i);
+                    Console.Write(" ");
+                }
+
+            }
+            Console.SetCursorPosition(0, 0);
         }
 
         private void CreateMessage(string playerInput, Message message)
@@ -87,30 +115,35 @@ namespace ConnectFour_ConsoleClient
                     bool notValidPosition = true;
                     while (notValidPosition)
                     {
-                        playerInput = Console.ReadLine();
-                        int playerInputAsInt = Int32.Parse(playerInput);
-                        if (playerInputAsInt >= 0 && playerInputAsInt < gameBoard.GetLength(1))
+                        playerInput = GetPlayerInput("Enter x-position for your next move");
+                        int playerInputAsInt;
+                        bool validIntInput = int.TryParse(playerInput, out playerInputAsInt);
+                        if (validIntInput)
                         {
-                            if (gameBoard[0, playerInputAsInt] == 0)
+
+                            if (playerInputAsInt >= 0 && playerInputAsInt < gameBoard.GetLength(1))
                             {
-                                notValidPosition = false;
+                                if (gameBoard[0, playerInputAsInt] == 0)
+                                {
+                                    notValidPosition = false;
+                                }
+                                else
+                                {
+                                    PrintInvalidInput();
+                                }
                             }
                             else
                             {
                                 PrintInvalidInput();
                             }
                         }
-                        else
-                        {
-                            PrintInvalidInput();
-                        }
                     }
+
                     SetMessage(message, Command.Move, playerInput); //todo 2:an är hårdkodad ska vara ett input från användaren
 
                     break;
                 case "4":
-                    Console.WriteLine("Enter new username");
-                    username = Console.ReadLine();
+                    username = GetPlayerInput("Enter new username");
                     SetMessage(message, Command.ChangeUserName, username);
                     break;
 
@@ -148,7 +181,7 @@ namespace ConnectFour_ConsoleClient
         private Message SetUserName(Command command)
         {
             Message message = new Message();
-            username = Console.ReadLine();
+            username = GetPlayerInput("Enter your username: ");
             SetMessage(message, command, username);
 
             return message;
