@@ -67,7 +67,9 @@ namespace ConnectFour_Server
                     running = false;
                     Console.WriteLine($"{UserName} ({Id}) is logged out!");
                     break;
+                case Command.Move:
 
+                    break;
                 default:
                     break;
             }

@@ -15,6 +15,7 @@ namespace ConnectFour_ConsoleClient
     {
         private TcpClient server;
         private string username;
+        public int UserId { get; set; }
 
         public void Start()
         {
@@ -33,8 +34,8 @@ namespace ConnectFour_ConsoleClient
             Console.WriteLine($"IP: {localIP}");
             #endregion
 
-            server = new TcpClient("192.168.220.128", 5000);
-            //server = new TcpClient(localIP, 5000);
+            //server = new TcpClient("192.168.220.128", 5000);
+            server = new TcpClient(localIP, 5000);
             Thread listenerThread = new Thread(Listen);
             listenerThread.Start();
 
@@ -81,27 +82,16 @@ namespace ConnectFour_ConsoleClient
             switch (playerInput)
             {
                 case "1":
-                    message.CommandType = Command.Move;
-                    message.Id = 1;
-                    message.MessageData = "2";
-                    message.Sender = username;
+                    SetMessage(message, Command.Move, "2"); //todo 2:an är hårdkodad ska vara ett input från användaren
                     break;
                 case "4":
                     Console.WriteLine("Enter new username");
                     username = Console.ReadLine();
                     SetMessage(message, Command.ChangeUserName, username);
-                    //message.CommandType = Command.ChangeUserName;
-                    //message.Id = 1;
-                    //message.MessageData = "";
-                    //message.Sender = username;
                     break;
 
                 case "10":
-                    message.CommandType = Command.Disconnect;
-                    message.Id = 1;
-                    message.MessageData = "10";
-                    message.Sender = username;
-                    message.UserId = -1;
+                    SetMessage(message, Command.Disconnect, "10");
                     break;
 
                 default:
@@ -122,7 +112,7 @@ namespace ConnectFour_ConsoleClient
             message.Id = 1; // todo :
             message.MessageData = messageData;
             message.Sender = username;
-            message.UserId = -1; //todo
+            message.UserId = UserId;
         }
 
         private Message SetUserName(Command command)
@@ -161,6 +151,7 @@ namespace ConnectFour_ConsoleClient
             {
                 case Command.SetUsername:
                     string UserName = message.MessageData;
+                    UserId = message.UserId;
                     Console.WriteLine($"Your username is set to {UserName}");
                     break;
                 case Command.ChangeUserName:

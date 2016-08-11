@@ -12,6 +12,11 @@ namespace ConnectFour_Server
 {
     class Server
     {
+        public Server()
+        {
+            Games = new List<Game>();
+            Players = new List<Player>();
+        }
         private List<Player> Players { get; set; }
         private List<Game> Games { get; set; }
         public List<Message> MessageQueue { get; set; }
@@ -34,6 +39,15 @@ namespace ConnectFour_Server
 
                     Thread clientThread = new Thread(newPlayer.Run);
                     clientThread.Start();
+
+
+                    if (Games.Count()==0)
+                    {
+                         CreateGame();
+                    }
+
+                    JoinGame(Games.First().Id, newPlayer);
+
                 }
             }
             catch (Exception ex)
@@ -59,11 +73,10 @@ namespace ConnectFour_Server
             Players.Remove(player);
         }
 
-        public Game CreateGame()
+        public void CreateGame()
         {
-            Game game = new ConnectFour_Server.Game();
+            Game game = new Game();
             Games.Add(game);
-            return game;
 
         }
 
