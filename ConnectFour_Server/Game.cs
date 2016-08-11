@@ -11,6 +11,8 @@ namespace ConnectFour_Server
         public Game()
         {
             Players = new List<Player>();
+            Gameboard = new int[7, 7];
+
         }
         public int Id { get; set; }
         public string Name { get; set; }
@@ -19,14 +21,13 @@ namespace ConnectFour_Server
 
         public int[,] PlayGame(int x, Player player)
         {
-            Gameboard = new int[7, 7];
 
             Gameboard[0, x] = player.Id;
 
             return Gameboard;
         }
 
-
+     
     }
 
 }

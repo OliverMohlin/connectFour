@@ -18,7 +18,7 @@ namespace ConnectFour_Server
             Players = new List<Player>();
         }
         private List<Player> Players { get; set; }
-        private List<Game> Games { get; set; }
+        public List<Game> Games { get; set; }
         public List<Message> MessageQueue { get; set; }
 
         public void Run()
@@ -40,13 +40,10 @@ namespace ConnectFour_Server
                     Thread clientThread = new Thread(newPlayer.Run);
                     clientThread.Start();
 
-
-                    if (Games.Count()==0)
+                    if (Games.Count() == 0)
                     {
-                         CreateGame();
+                        CreateGame();
                     }
-
-                    JoinGame(Games.First().Id, newPlayer);
 
                 }
             }
@@ -77,10 +74,11 @@ namespace ConnectFour_Server
         {
             Game game = new Game();
             Games.Add(game);
+            Console.WriteLine("A game has been created");
 
         }
 
-        public Game JoinGame(int id, Player player)
+        public void JoinGame(int id, Player player)
         {
 
             foreach (var item in Games)
@@ -88,12 +86,10 @@ namespace ConnectFour_Server
                 if (item.Id == id)
                 {
                     item.Players.Add(player);
-                    return item;
+                    player.Games.Add(item);
+                    Console.WriteLine($"{player.UserName} has joined game: {item.Id}");
                 }
             }
-            return new Game(); //todo
         }
-
-
     }
 }

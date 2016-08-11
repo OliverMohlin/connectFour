@@ -83,6 +83,7 @@ namespace ConnectFour_ConsoleClient
             {
                 case "1":
                     SetMessage(message, Command.Move, "2"); //todo 2:an är hårdkodad ska vara ett input från användaren
+
                     break;
                 case "4":
                     Console.WriteLine("Enter new username");
@@ -109,7 +110,7 @@ namespace ConnectFour_ConsoleClient
         private void SetMessage(Message message, Command commandType, string messageData)
         {
             message.CommandType = commandType;
-            message.Id = 1; // todo :
+            message.MessageId = 1; // todo :
             message.MessageData = messageData;
             message.Sender = username;
             message.UserId = UserId;

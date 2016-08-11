@@ -19,6 +19,7 @@ namespace ConnectFour_Server
             this.server = server;
             PlayerTcp = playerTcp;
             Id = playerCount++;
+            Games = new List<Game>();
 
         }
         public string UserName { get; set; }
@@ -58,15 +59,19 @@ namespace ConnectFour_Server
                     message.UserId = Id;
                     UserName = message.MessageData;
                     Console.WriteLine($"Username of {Id} is set to {UserName}");
+                    server.JoinGame(server.Games.Last().Id, this);
                     break;
+
                 case Command.ChangeUserName:
                     UserName = message.MessageData;
                     Console.WriteLine($"Username of {Id} is changed to {UserName}");
                     break;
+
                 case Command.Disconnect:
                     running = false;
                     Console.WriteLine($"{UserName} ({Id}) is logged out!");
                     break;
+
                 case Command.Move:
 
                     break;
