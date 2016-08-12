@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ascii.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Message.cs" />

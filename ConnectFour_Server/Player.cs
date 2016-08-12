@@ -35,8 +35,15 @@ namespace ConnectFour_Server
             bool running = true;
             while (running)
             {
-
-                messageJson = new BinaryReader(n).ReadString();
+                try
+                {
+                    messageJson = new BinaryReader(n).ReadString();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine($"{UserName} has closed their client");
+                    break;
+                }
 
                 Message message = JsonConvert.DeserializeObject<Message>(messageJson);
 

@@ -276,7 +276,14 @@ namespace ConnectFour_ConsoleClient
                     if (message.Winner != 0)
                     {
                         if (message.Winner == UserId)
+                        { 
                             Console.WriteLine("Du vann");
+                            Console.Clear();
+                            ascii.YouWin();
+                            string winnerTxt = "Press any key to continue :D";
+                            Console.SetCursorPosition(Console.WindowHeight, Console.WindowWidth / 2 - (winnerTxt.Length/2));
+                            Console.WriteLine (winnerTxt);
+                        }
                         else
                             Console.WriteLine("Du vann inte");
                     }
@@ -291,7 +298,7 @@ namespace ConnectFour_ConsoleClient
 
         private void DrawGameBoard(string messageData)
         {
-            Thread.Sleep(100);
+            Thread.Sleep(500);
             Console.SetCursorPosition(50, 15);
             var gameBoard = JsonConvert.DeserializeObject<int[,]>(messageData);
             for (int x = 0; x < gameBoard.GetLength(0); x++)
