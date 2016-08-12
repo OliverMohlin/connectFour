@@ -78,8 +78,6 @@ namespace ConnectFour_ConsoleClient
                         if (Enum.IsDefined(typeof(Command), playerInputAsInt))
                         {
                             notValidInput = false;
-                            Console.WriteLine("Correct input");
-                            Thread.Sleep(1000);
                         }
                         else
                         {
@@ -92,7 +90,8 @@ namespace ConnectFour_ConsoleClient
 
                     if (message.CommandType != Command.Move || MyTurn)
                         SendToServer(serverStream, message);
-                    MyTurn = false;
+                    if (message.CommandType == Command.Move && MyTurn)
+                        MyTurn = false;
                 }
                 Thread.Sleep(1000);
                 server.Close();
@@ -184,6 +183,10 @@ namespace ConnectFour_ConsoleClient
                     SetMessage(message, Command.ChangeUserName, username);
                     break;
 
+                case "5":
+                    SetMessage(message, Command.JoinGame, username);
+                    break;
+
                 case "10":
                     SetMessage(message, Command.Disconnect, "10");
                     break;
@@ -236,7 +239,7 @@ namespace ConnectFour_ConsoleClient
                 {
                     NetworkStream n = server.GetStream();
                     messageJson = new BinaryReader(n).ReadString();
-                    Message message = Newtonsoft.Json.JsonConvert.DeserializeObject<Message>(messageJson);
+                    Message message = JsonConvert.DeserializeObject<Message>(messageJson);
                     running = ParseMessage(running, message);
                 }
             }
@@ -252,10 +255,11 @@ namespace ConnectFour_ConsoleClient
             {
                 case Command.SetUsername:
                     UserId = message.UserId;
-                    gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
                     Console.WriteLine($"Your username is set to {username}");
-                    gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
-                    DrawGameBoard(message.MessageData);
+                    DrawMenu();
+                    //gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
+                    //gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
+                    //DrawGameBoard(message.MessageData);
                     break;
                 case Command.ChangeUserName:
                     Console.WriteLine($"Your username is changed to {username}");
@@ -276,24 +280,36 @@ namespace ConnectFour_ConsoleClient
                     if (message.Winner != 0)
                     {
                         if (message.Winner == UserId)
-                        { 
+                        {
                             Console.WriteLine("Du vann");
                             Console.Clear();
                             ascii.YouWin();
                             string winnerTxt = "Press any key to continue :D";
-                            Console.SetCursorPosition(Console.WindowHeight, Console.WindowWidth / 2 - (winnerTxt.Length/2));
-                            Console.WriteLine (winnerTxt);
+                            Console.SetCursorPosition(Console.WindowHeight, Console.WindowWidth / 2 - (winnerTxt.Length / 2));
+                            Console.WriteLine(winnerTxt);
                         }
                         else
                             Console.WriteLine("Du vann inte");
                     }
 
                     break;
+
+                case Command.JoinGame:
+                    gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
+                    DrawGameBoard(message.MessageData);
+                    break;
+
                 default:
                     break;
             }
 
             return running;
+        }
+
+        private void DrawMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("5. Join Game");
         }
 
         private void DrawGameBoard(string messageData)

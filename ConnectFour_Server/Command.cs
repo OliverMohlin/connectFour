@@ -12,6 +12,7 @@ namespace ConnectFour_Server
         SetUsername = 2,
         Message = 3,
         ChangeUserName = 4,
+        JoinGame = 5,
         Disconnect = 10
     }
 }

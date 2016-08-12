@@ -40,10 +40,7 @@ namespace ConnectFour_Server
                     Thread clientThread = new Thread(newPlayer.Run);
                     clientThread.Start();
 
-                    if (Games.Count() % 2 == 0)
-                    {
-                        CreateGame();
-                    }
+
 
                 }
             }

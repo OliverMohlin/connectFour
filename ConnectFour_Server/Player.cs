@@ -77,7 +77,6 @@ namespace ConnectFour_Server
                     message.UserId = Id;
                     UserName = message.MessageData;
                     Console.WriteLine($"Username of {Id} is set to {UserName}");
-                    message.MessageData = JsonConvert.SerializeObject(server.JoinGame(server.Games.Last().Id, this));
                     break;
 
                 case Command.ChangeUserName:
@@ -97,6 +96,14 @@ namespace ConnectFour_Server
                         message.Winner = Id;
                     }
 
+                    break;
+
+                case Command.JoinGame:
+                    if (Games.Count() % 2 == 0)
+                    {
+                        server.CreateGame();
+                    }
+                    message.MessageData = JsonConvert.SerializeObject(server.JoinGame(server.Games.Last().Id, this));
                     break;
                 default:
                     break;
