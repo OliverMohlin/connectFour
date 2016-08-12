@@ -14,10 +14,16 @@ namespace ConnectFour_ConsoleClient
 {
     class Client
     {
+        public Client()
+        {
+            MyTurn = true;
+        }
+
         private TcpClient server;
         private string username;
         public int UserId { get; set; }
         int[,] gameBoard = new int[7, 7];
+        public bool MyTurn { get; set; }
 
         public void Start()
         {
@@ -65,7 +71,9 @@ namespace ConnectFour_ConsoleClient
                     playerInput = GetPlayerInput("Make a choice (1-10)");
                     CreateMessage(playerInput, message);
 
-                    SendToServer(serverStream, message);
+                    if (message.CommandType != Command.Move || MyTurn)
+                        SendToServer(serverStream, message);
+                        MyTurn = false;
                 }
                 Thread.Sleep(1000);
                 server.Close();
@@ -112,35 +120,41 @@ namespace ConnectFour_ConsoleClient
             switch (playerInput)
             {
                 case "1":
-                    bool notValidPosition = true;
-                    while (notValidPosition)
+                    if (MyTurn)
                     {
-                        playerInput = GetPlayerInput("Enter x-position for your next move");
-                        int playerInputAsInt;
-                        bool validIntInput = int.TryParse(playerInput, out playerInputAsInt);
-                        if (validIntInput)
+                        bool notValidPosition = true;
+                        while (notValidPosition)
                         {
-
-                            if (playerInputAsInt >= 0 && playerInputAsInt < gameBoard.GetLength(1))
+                            playerInput = GetPlayerInput("Enter x-position for your next move");
+                            int playerInputAsInt;
+                            bool validIntInput = int.TryParse(playerInput, out playerInputAsInt);
+                            if (validIntInput)
                             {
-                                if (gameBoard[0, playerInputAsInt] == 0)
+
+                                if (playerInputAsInt >= 0 && playerInputAsInt < gameBoard.GetLength(1))
                                 {
-                                    notValidPosition = false;
+                                    if (gameBoard[0, playerInputAsInt] == 0)
+                                    {
+                                        notValidPosition = false;
+                                    }
+                                    else
+                                    {
+                                        PrintInvalidInput();
+                                    }
                                 }
                                 else
                                 {
                                     PrintInvalidInput();
                                 }
                             }
-                            else
-                            {
-                                PrintInvalidInput();
-                            }
                         }
+                        SetMessage(message, Command.Move, playerInput);
                     }
-
-                    SetMessage(message, Command.Move, playerInput); //todo 2:an är hårdkodad ska vara ett input från användaren
-
+                    else
+                    {
+                        Console.WriteLine("Not your turn");
+                        Thread.Sleep(750);
+                    }
                     break;
                 case "4":
                     username = GetPlayerInput("Enter new username");
@@ -229,6 +243,11 @@ namespace ConnectFour_ConsoleClient
                 case Command.Move:
                     gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
                     DrawGameBoard(message.MessageData);
+
+                    if (message.UserId != UserId)
+                    {
+                        MyTurn = true;
+                    }
                     break;
                 default:
                     break;
@@ -239,6 +258,7 @@ namespace ConnectFour_ConsoleClient
 
         private void DrawGameBoard(string messageData)
         {
+            Thread.Sleep(100);
             Console.SetCursorPosition(50, 15);
             var gameBoard = JsonConvert.DeserializeObject<int[,]>(messageData);
             for (int x = 0; x < gameBoard.GetLength(0); x++)
