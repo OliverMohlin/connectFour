@@ -39,7 +39,7 @@ namespace ConnectFour_Server
                 {
                     messageJson = new BinaryReader(n).ReadString();
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     Console.WriteLine($"{UserName} has closed their client");
                     break;
@@ -59,6 +59,14 @@ namespace ConnectFour_Server
                         {
                             server.SendMessage(player, messageJson);
                         }
+                    }
+                    if (Games.Last().CheckForWinner())
+                    {
+
+                        server.Games.Remove(Games.Last());
+                        Console.WriteLine(server.Games.Count);
+                        Games.Remove(Games.Last());
+                        Console.WriteLine(Games.Count);
                     }
                 }
 
@@ -99,7 +107,7 @@ namespace ConnectFour_Server
                     break;
 
                 case Command.JoinGame:
-                    if (Games.Count() % 2 == 0)
+                    if (server.Games.Count() % 2 == 0)
                     {
                         server.CreateGame();
                     }

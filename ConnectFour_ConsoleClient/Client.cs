@@ -24,7 +24,6 @@ namespace ConnectFour_ConsoleClient
         public int UserId { get; set; }
         int[,] gameBoard = new int[7, 7];
         public bool MyTurn { get; set; }
-
         public void Start()
         {
             #region Get local IP
@@ -68,28 +67,36 @@ namespace ConnectFour_ConsoleClient
 
                 while (playerInput != "10")
                 {
-                    bool notValidInput = true;
-                    bool notANumber = true;
-                    while (notValidInput || notANumber)
-                    {
-                        playerInput = GetPlayerInput("Make a choice (1-10)");
-                        int playerInputAsInt = 0;
-                        notANumber = !(int.TryParse(playerInput, out playerInputAsInt));
-                        if (Enum.IsDefined(typeof(Command), playerInputAsInt))
-                        {
-                            notValidInput = false;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Incorrect input");
-                            Thread.Sleep(500);
-                        }
 
+                    if (message.CommandType != Command.Move && message.CommandType != Command.JoinGame)
+                    {
+                        bool notValidInput = true;
+                        bool notANumber = true;
+                        while (notValidInput || notANumber)
+                        {
+                            ClearMenuArea();
+                            DrawMenu();
+                            playerInput = GetPlayerInput("");
+                            int playerInputAsInt = 0;
+                            notANumber = !(int.TryParse(playerInput, out playerInputAsInt));
+                            if (Enum.IsDefined(typeof(Command), playerInputAsInt))
+                            {
+                                notValidInput = false;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Incorrect input");
+                                Thread.Sleep(500);
+                            }
+                        }
                     }
+                    else
+                        playerInput = "1";
+
                     CreateMessage(playerInput, message);
 
-                    if (message.CommandType != Command.Move || MyTurn)
-                        SendToServer(serverStream, message);
+                    //if (message.CommandType != Command.Move || MyTurn)
+                    SendToServer(serverStream, message);
                     if (message.CommandType == Command.Move && MyTurn)
                         MyTurn = false;
                 }
@@ -104,7 +111,6 @@ namespace ConnectFour_ConsoleClient
 
         private static string GetPlayerInput(string messageToUser)
         {
-            ClearMenuArea();
             Console.WriteLine(messageToUser);
             string playerInput = "";
             bool notValidInput = true;
@@ -138,11 +144,22 @@ namespace ConnectFour_ConsoleClient
             switch (playerInput)
             {
                 case "1":
+                    if (!MyTurn)
+                    {
+                        Thread.Sleep(1000);
+                        Console.Write("Waiting for other player");
+                    }
+                    while (!MyTurn)
+                    {
+                        Console.Write(".");
+                        Thread.Sleep(1000);
+                    }
                     if (MyTurn)
                     {
                         bool notValidPosition = true;
                         while (notValidPosition)
                         {
+                            ClearMenuArea();
                             playerInput = GetPlayerInput("Enter x-position for your next move");
                             int playerInputAsInt;
                             bool validIntInput = int.TryParse(playerInput, out playerInputAsInt);
@@ -172,13 +189,14 @@ namespace ConnectFour_ConsoleClient
                         }
                         SetMessage(message, Command.Move, playerInput);
                     }
-                    else
-                    {
-                        Console.WriteLine("Not your turn");
-                        Thread.Sleep(500);
-                    }
+                    //else
+                    //{
+                    //    Console.WriteLine("Not your turn");
+                    //    Thread.Sleep(500);
+                    //}
                     break;
                 case "4":
+                    ClearMenuArea();
                     username = GetPlayerInput("Enter new username");
                     SetMessage(message, Command.ChangeUserName, username);
                     break;
@@ -193,6 +211,7 @@ namespace ConnectFour_ConsoleClient
 
                 default:
                     break;
+
             }
         }
 
@@ -222,6 +241,7 @@ namespace ConnectFour_ConsoleClient
         private Message SetUserName(Command command)
         {
             Message message = new Message();
+            ClearMenuArea();
             username = GetPlayerInput("Enter your username: ");
             SetMessage(message, command, username);
 
@@ -256,7 +276,6 @@ namespace ConnectFour_ConsoleClient
                 case Command.SetUsername:
                     UserId = message.UserId;
                     Console.WriteLine($"Your username is set to {username}");
-                    DrawMenu();
                     //gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
                     //gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
                     //DrawGameBoard(message.MessageData);
@@ -282,26 +301,23 @@ namespace ConnectFour_ConsoleClient
                         if (message.Winner == UserId)
                         {
                             Console.WriteLine("Du vann");
-                            //Console.Clear();
-                            //ascii.YouWin();
-                            //string winnerTxt = "Press any key to continue :D";
-                            //Console.SetCursorPosition(Console.WindowHeight, Console.WindowWidth / 2 - (winnerTxt.Length / 2));
-                            //Console.WriteLine(winnerTxt);
+                            MyTurn = true;
                         }
                         else
                             Console.WriteLine("Du vann inte");
                         string winnerTxt = "Press any key to continue :D";
-                        Console.SetCursorPosition(Console.WindowHeight -1, Console.WindowWidth / 2 - (winnerTxt.Length / 2));
-                        Console.WriteLine(winnerTxt);
+                        Console.SetCursorPosition(Console.WindowWidth / 2 - (winnerTxt.Length / 2), Console.WindowHeight - 1);
+                        Console.Write(winnerTxt);
                         Console.ReadKey();
                         DrawMenu();
                     }
-                 
+
 
                     break;
 
                 case Command.JoinGame:
                     gameBoard = JsonConvert.DeserializeObject<int[,]>(message.MessageData);
+                    Console.Clear();
                     DrawGameBoard(message.MessageData);
                     break;
 
@@ -312,9 +328,9 @@ namespace ConnectFour_ConsoleClient
             return running;
         }
 
-        private void DrawMenu()
+        private static void DrawMenu()
         {
-            Console.Clear();
+            Thread.Sleep(500);
             Console.WriteLine("5. Join Game");
         }
 
@@ -342,7 +358,7 @@ namespace ConnectFour_ConsoleClient
             {
                 Console.Write(" " + i + " ");
             }
-            Console.SetCursorPosition(0, 7);
+            Console.SetCursorPosition(0, 2);
         }
     }
 }
