@@ -282,15 +282,21 @@ namespace ConnectFour_ConsoleClient
                         if (message.Winner == UserId)
                         {
                             Console.WriteLine("Du vann");
-                            Console.Clear();
-                            ascii.YouWin();
-                            string winnerTxt = "Press any key to continue :D";
-                            Console.SetCursorPosition(Console.WindowHeight, Console.WindowWidth / 2 - (winnerTxt.Length / 2));
-                            Console.WriteLine(winnerTxt);
+                            //Console.Clear();
+                            //ascii.YouWin();
+                            //string winnerTxt = "Press any key to continue :D";
+                            //Console.SetCursorPosition(Console.WindowHeight, Console.WindowWidth / 2 - (winnerTxt.Length / 2));
+                            //Console.WriteLine(winnerTxt);
                         }
                         else
                             Console.WriteLine("Du vann inte");
+                        string winnerTxt = "Press any key to continue :D";
+                        Console.SetCursorPosition(Console.WindowHeight -1, Console.WindowWidth / 2 - (winnerTxt.Length / 2));
+                        Console.WriteLine(winnerTxt);
+                        Console.ReadKey();
+                        DrawMenu();
                     }
+                 
 
                     break;
 

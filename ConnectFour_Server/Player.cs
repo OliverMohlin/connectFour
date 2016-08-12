@@ -39,7 +39,7 @@ namespace ConnectFour_Server
                 {
                     messageJson = new BinaryReader(n).ReadString();
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
                     Console.WriteLine($"{UserName} has closed their client");
                     break;
