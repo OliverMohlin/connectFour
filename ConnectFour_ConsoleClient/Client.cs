@@ -68,7 +68,26 @@ namespace ConnectFour_ConsoleClient
 
                 while (playerInput != "10")
                 {
-                    playerInput = GetPlayerInput("Make a choice (1-10)");
+                    bool notValidInput = true;
+                    bool notANumber = true;
+                    while (notValidInput || notANumber)
+                    {
+                        playerInput = GetPlayerInput("Make a choice (1-10)");
+                        int playerInputAsInt = 0;
+                        notANumber = !(int.TryParse(playerInput, out playerInputAsInt));
+                        if (Enum.IsDefined(typeof(Command), playerInputAsInt))
+                        {
+                            notValidInput = false;
+                            Console.WriteLine("Correct input");
+                            Thread.Sleep(1000);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Incorrect input");
+                            Thread.Sleep(500);
+                        }
+
+                    }
                     CreateMessage(playerInput, message);
 
                     if (message.CommandType != Command.Move || MyTurn)
@@ -147,13 +166,17 @@ namespace ConnectFour_ConsoleClient
                                     PrintInvalidInput();
                                 }
                             }
+                            else
+                            {
+                                PrintInvalidInput();
+                            }
                         }
                         SetMessage(message, Command.Move, playerInput);
                     }
                     else
                     {
                         Console.WriteLine("Not your turn");
-                        Thread.Sleep(750);
+                        Thread.Sleep(500);
                     }
                     break;
                 case "4":
@@ -174,6 +197,7 @@ namespace ConnectFour_ConsoleClient
         {
             Console.WriteLine("Invalid move, try again");
             Console.CursorTop -= 2;
+            Thread.Sleep(500);
         }
 
         private static void SendToServer(NetworkStream serverStream, Message message)
@@ -248,6 +272,15 @@ namespace ConnectFour_ConsoleClient
                     {
                         MyTurn = true;
                     }
+
+                    if (message.Winner != 0)
+                    {
+                        if (message.Winner == UserId)
+                            Console.WriteLine("Du vann");
+                        else
+                            Console.WriteLine("Du vann inte");
+                    }
+
                     break;
                 default:
                     break;

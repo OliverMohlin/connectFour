@@ -14,5 +14,6 @@ namespace ConnectFour_Server
         public string MessageData { get; set; }
         public string Sender { get; set; }
         public int GameId { get; set; }
+        public int Winner { get; set; }
     }
 }

@@ -80,12 +80,16 @@ namespace ConnectFour_Server
 
                 case Command.Disconnect:
                     running = false;
-                    Console.WriteLine($"{UserName} ({Id}) is logged out!");
+                    Console.WriteLine($"{UserName} (ID: {Id}) is logged out!");
                     break;
 
                 case Command.Move:
                     message.MessageData = JsonConvert.SerializeObject(Games.Last().PlayGame(Convert.ToInt32(message.MessageData), this));
-                    Games.Last().CheckForWinner();
+                    if (Games.Last().CheckForWinner())
+                    {
+                        message.Winner = Id;
+                    }
+
                     break;
                 default:
                     break;

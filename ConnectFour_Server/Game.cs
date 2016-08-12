@@ -59,7 +59,7 @@ namespace ConnectFour_Server
                         if (gameBoardCopy[y, x] == gameBoardCopy[y + 3, x] && gameBoardCopy[y, x] == gameBoardCopy[y + 2, x] && gameBoardCopy[y, x] == gameBoardCopy[y + 1, x])
                             return true;
 
-                        if (Gameboard[y, x] == gameBoardCopy[y + 3, x - 3] && gameBoardCopy[y, x] == gameBoardCopy[y + 2, x - 2] && gameBoardCopy[y, x] == gameBoardCopy[y + 1, x - 1])
+                        if (gameBoardCopy[y, x] == gameBoardCopy[y + 3, x - 3] && gameBoardCopy[y, x] == gameBoardCopy[y + 2, x - 2] && gameBoardCopy[y, x] == gameBoardCopy[y + 1, x - 1])
                             return true;
                     }
                 }
