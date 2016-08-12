@@ -85,7 +85,7 @@ namespace ConnectFour_Server
 
                 case Command.Move:
                     message.MessageData = JsonConvert.SerializeObject(Games.Last().PlayGame(Convert.ToInt32(message.MessageData), this));
-
+                    Games.Last().CheckForWinner();
                     break;
                 default:
                     break;

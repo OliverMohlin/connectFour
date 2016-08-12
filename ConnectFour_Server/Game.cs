@@ -32,7 +32,40 @@ namespace ConnectFour_Server
             return Gameboard;
         }
 
+        public bool CheckForWinner()
+        {
+            int[,] gameBoardCopy = new int[Gameboard.GetLength(0) + 3, Gameboard.GetLength(1) + 6];
+            // skapar en kopia som inte går out of bounds vid vinnarcheck
+            for (int y = 0; y < Gameboard.GetLength(0); y++)
+            {
+                for (int x = 0; x < Gameboard.GetLength(1); x++)
+                {
+                    gameBoardCopy[y, x + 3] = Gameboard[y, x]; 
+                }
+            }
 
+            for (int y = 0; y < gameBoardCopy.GetLength(0); y++)
+            {
+                for (int x = 0; x < gameBoardCopy.GetLength(1); x++)
+                {
+                    if (gameBoardCopy[y, x] != 0)
+                    {
+                        if (gameBoardCopy[y, x] == gameBoardCopy[y, x + 3] && gameBoardCopy[y, x] == gameBoardCopy[y, x + 2] && gameBoardCopy[y, x] == gameBoardCopy[y, x + 1])
+                            return true;
+
+                        if (gameBoardCopy[y, x] == gameBoardCopy[y + 3, x + 3] && gameBoardCopy[y, x] == gameBoardCopy[y + 2, x + 2] && gameBoardCopy[y, x] == gameBoardCopy[y + 1, x + 1])
+                            return true;
+
+                        if (gameBoardCopy[y, x] == gameBoardCopy[y + 3, x] && gameBoardCopy[y, x] == gameBoardCopy[y + 2, x] && gameBoardCopy[y, x] == gameBoardCopy[y + 1, x])
+                            return true;
+
+                        if (Gameboard[y, x] == gameBoardCopy[y + 3, x - 3] && gameBoardCopy[y, x] == gameBoardCopy[y + 2, x - 2] && gameBoardCopy[y, x] == gameBoardCopy[y + 1, x - 1])
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 
 }

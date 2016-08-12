@@ -73,7 +73,7 @@ namespace ConnectFour_ConsoleClient
 
                     if (message.CommandType != Command.Move || MyTurn)
                         SendToServer(serverStream, message);
-                        MyTurn = false;
+                    MyTurn = false;
                 }
                 Thread.Sleep(1000);
                 server.Close();
@@ -266,7 +266,11 @@ namespace ConnectFour_ConsoleClient
                 Console.CursorLeft = 50;
                 for (int y = 0; y < gameBoard.GetLength(1); y++)
                 {
-                    Console.Write("[" + gameBoard[x, y] + "]");
+                    if (gameBoard[x, y] == 0)
+                        Console.Write("[ ]");
+
+                    else
+                        Console.Write("[" + gameBoard[x, y] + "]");
                 }
                 Console.WriteLine("");
             }
