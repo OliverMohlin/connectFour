@@ -16,10 +16,13 @@ namespace ConnectFour_Server
         {
             Games = new List<Game>();
             Players = new List<Player>();
+            ConnectedIPs = new List<string>();
         }
         private List<Player> Players { get; set; }
         public List<Game> Games { get; set; }
         public List<Message> MessageQueue { get; set; }
+
+        private List<string> ConnectedIPs { get; set; }
 
         public void Run()
         {
@@ -34,14 +37,20 @@ namespace ConnectFour_Server
                 while (true)
                 {
                     TcpClient p = listener.AcceptTcpClient();
-                    Player newPlayer = new Player(p, this);
-                    Players.Add(newPlayer);
+                    var ip = ((IPEndPoint)p.Client.RemoteEndPoint).Address.ToString();
+                    if (ConnectedIPs != null && ConnectedIPs.Contains(ip))
+                    {
+                        p.Close();
+                    }
+                    else
+                    {
+                        ConnectedIPs.Add(ip);
+                        Player newPlayer = new Player(p, this);
+                        Players.Add(newPlayer);
 
-                    Thread clientThread = new Thread(newPlayer.Run);
-                    clientThread.Start();
-
-
-
+                        Thread clientThread = new Thread(newPlayer.Run);
+                        clientThread.Start();
+                    }
                 }
             }
             catch (Exception ex)
@@ -90,12 +99,12 @@ namespace ConnectFour_Server
                         return item.Gameboard;
                     }
                     //else
-                        //return player.UserName + " was To slow, Go home";
-                        
+                    //return player.UserName + " was To slow, Go home";
+
                 }
             }
             //return "The game does not exist!";
-            return new int[1,1];
+            return new int[1, 1];
         }
     }
 }
