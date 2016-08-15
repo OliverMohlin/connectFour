@@ -17,7 +17,7 @@ namespace ConnectFour_ConsoleClient
         public Client()
         {
             MyTurn = true;
-            HasWon = false;
+            GameIsRunning = false;
         }
 
         private TcpClient server;
@@ -26,8 +26,8 @@ namespace ConnectFour_ConsoleClient
         int[,] gameBoard = new int[7, 7];
         public bool MyTurn { get; set; }
 
-        public bool HasWon { get; set; }
-        
+        public bool GameIsRunning { get; set; }
+
 
         string ipAddress = "192.168.220.105";
 
@@ -94,7 +94,7 @@ namespace ConnectFour_ConsoleClient
                 while (playerInput != "10")
                 {
 
-                    if (message.CommandType != Command.Move && message.CommandType != Command.JoinGame)
+                    if (message.CommandType != Command.Move && message.CommandType != Command.JoinGame || !GameIsRunning)
                     {
                         bool notValidInput = true;
                         bool notANumber = true;
@@ -171,7 +171,7 @@ namespace ConnectFour_ConsoleClient
             {
                 case "1":
                     Thread.Sleep(50);
-                    if (!HasWon)
+                    if (GameIsRunning)
                     {
                         if (!MyTurn)
                         {
@@ -221,6 +221,26 @@ namespace ConnectFour_ConsoleClient
                     }
                     else
                     {
+
+                        if (message.Winner == UserId)
+                        {
+                            Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.CursorTop);
+                            Console.WriteLine("YOU WON!");
+                            //GameIsRunning = true;
+                        }
+                        else
+                        {
+                            Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.CursorTop);
+                            Console.WriteLine("YOU LOST!");
+                        }
+                        string endText = "Press the 'any' key to continue...";
+                        Console.SetCursorPosition(Console.WindowWidth / 2 - (endText.Length / 2), Console.WindowHeight - 1);
+                        Console.Write(endText);
+                        Console.ReadKey();
+                        Console.Clear();
+                        //DrawMenu();
+
+
                         GetPlayerInput("Hej LAlly xD");
                         playerInput = Console.ReadLine();
                     }
@@ -232,6 +252,7 @@ namespace ConnectFour_ConsoleClient
                     break;
 
                 case "5":
+                    GameIsRunning = true;
                     SetMessage(message, Command.JoinGame, username);
                     MyTurn = true;
                     break;
@@ -329,23 +350,7 @@ namespace ConnectFour_ConsoleClient
 
                     if (message.Winner != 0)
                     {
-                        if (message.Winner == UserId)
-                        {
-                            Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.CursorTop);
-                            Console.WriteLine("YOU WON!");
-                            HasWon = true;
-                        }
-                        else
-                        {
-                            Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.CursorTop);
-                            Console.WriteLine("YOU LOST!");
-                        }
-                        string winnerTxt = "Press the 'any' key to continue...";
-                        Console.SetCursorPosition(Console.WindowWidth / 2 - (winnerTxt.Length / 2), Console.WindowHeight - 1);
-                        Console.Write(winnerTxt);
-                        Console.ReadKey();
-                        Console.Clear();
-                        DrawMenu();
+                        GameIsRunning = false;
                     }
 
 
