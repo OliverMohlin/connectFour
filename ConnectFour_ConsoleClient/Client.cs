@@ -42,7 +42,7 @@ namespace ConnectFour_ConsoleClient
             Console.WriteLine($"IP: {localIP}");
             #endregion
 
-            //server = new TcpClient("192.168.220.110", 5000);
+            //server = new TcpClient("192.168.220.128", 5000);
             server = new TcpClient(localIP, 5000);
             Thread listenerThread = new Thread(Listen);
             listenerThread.Start();
@@ -222,11 +222,7 @@ namespace ConnectFour_ConsoleClient
         private Message SetUserName(Command command)
         {
             Message message = new Message();
-            ascii.StartScreen();
-            Thread.Sleep(5000);
-            Console.Clear();
             username = GetPlayerInput("Enter your username: ");
-            
             SetMessage(message, command, username);
 
             return message;
