@@ -351,6 +351,7 @@ namespace ConnectFour_ConsoleClient
                     if (message.Winner != 0)
                     {
                         GameIsRunning = false;
+
                     }
 
 
@@ -380,17 +381,35 @@ namespace ConnectFour_ConsoleClient
             Thread.Sleep(500);
             Console.SetCursorPosition(50, 15);
             var gameBoard = JsonConvert.DeserializeObject<int[,]>(messageData);
+            ConsoleColor tempForegroundColor;
+            ConsoleColor tempBackgroundColor;
             for (int x = 0; x < gameBoard.GetLength(0); x++)
             {
+                tempBackgroundColor = Console.BackgroundColor;
+                Console.BackgroundColor = ConsoleColor.White;
                 Console.CursorLeft = 50;
                 for (int y = 0; y < gameBoard.GetLength(1); y++)
                 {
                     if (gameBoard[x, y] == 0)
                         Console.Write("[ ]");
 
+                    else if (gameBoard[x, y] == UserId)
+                    {
+                        tempForegroundColor = Console.ForegroundColor;
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write("[x]");
+                        Console.ForegroundColor = tempForegroundColor;
+                    }
                     else
-                        Console.Write("[" + gameBoard[x, y] + "]");
+                    {
+                        tempForegroundColor = Console.ForegroundColor;
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("[o]");
+                        Console.ForegroundColor = tempForegroundColor;
+                    }
                 }
+                Console.BackgroundColor = tempBackgroundColor;
+
                 Console.WriteLine("");
             }
 
