@@ -34,6 +34,7 @@ namespace ConnectFour_Server
 
         public bool CheckForWinner()
         {
+            //return true;
             int[,] gameBoardCopy = new int[Gameboard.GetLength(0) + 3, Gameboard.GetLength(1) + 6];
             // skapar en kopia som inte går out of bounds vid vinnarcheck
             for (int y = 0; y < Gameboard.GetLength(0); y++)

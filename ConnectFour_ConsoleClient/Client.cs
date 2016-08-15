@@ -48,8 +48,8 @@ namespace ConnectFour_ConsoleClient
             try
             {
 
-                //server = new TcpClient(ipAddress, 5000);
-                server = new TcpClient(localIP, 5000);
+                server = new TcpClient(ipAddress, 5000);
+                //server = new TcpClient(localIP, 5000);
 
                 Thread listenerThread = new Thread(Listen);
                 listenerThread.Start();
@@ -166,33 +166,41 @@ namespace ConnectFour_ConsoleClient
             switch (playerInput)
             {
                 case "1":
-                    if (!MyTurn)
+                    Thread.Sleep(500);
+                    if (message.Winner == 0)
                     {
-                        Thread.Sleep(1000);
-                        Console.Write("Waiting for other player");
-                    }
-                    while (!MyTurn)
-                    {
-                        Console.Write(".");
-                        Thread.Sleep(1000);
-                    }
-                    if (MyTurn)
-                    {
-                        bool notValidPosition = true;
-                        while (notValidPosition)
+                        if (!MyTurn)
                         {
-                            ClearMenuArea();
-                            playerInput = GetPlayerInput("Enter x-position for your next move");
-                            int playerInputAsInt;
-                            bool validIntInput = int.TryParse(playerInput, out playerInputAsInt);
-                            if (validIntInput)
+                            Thread.Sleep(1000);
+                            Console.Write("Waiting for other player");
+                        }
+                        while (!MyTurn)
+                        {
+                            Console.Write(".");
+                            Thread.Sleep(1000);
+                        }
+                        if (MyTurn)
+                        {
+                            bool notValidPosition = true;
+                            while (notValidPosition)
                             {
-
-                                if (playerInputAsInt >= 0 && playerInputAsInt < gameBoard.GetLength(1))
+                                ClearMenuArea();
+                                playerInput = GetPlayerInput("Enter x-position for your next move");
+                                int playerInputAsInt;
+                                bool validIntInput = int.TryParse(playerInput, out playerInputAsInt);
+                                if (validIntInput)
                                 {
-                                    if (gameBoard[0, playerInputAsInt] == 0)
+
+                                    if (playerInputAsInt >= 0 && playerInputAsInt < gameBoard.GetLength(1))
                                     {
-                                        notValidPosition = false;
+                                        if (gameBoard[0, playerInputAsInt] == 0)
+                                        {
+                                            notValidPosition = false;
+                                        }
+                                        else
+                                        {
+                                            PrintInvalidInput();
+                                        }
                                     }
                                     else
                                     {
@@ -204,12 +212,8 @@ namespace ConnectFour_ConsoleClient
                                     PrintInvalidInput();
                                 }
                             }
-                            else
-                            {
-                                PrintInvalidInput();
-                            }
+                            SetMessage(message, Command.Move, playerInput);
                         }
-                        SetMessage(message, Command.Move, playerInput);
                     }
                     //else
                     //{
@@ -225,6 +229,7 @@ namespace ConnectFour_ConsoleClient
 
                 case "5":
                     SetMessage(message, Command.JoinGame, username);
+                    MyTurn = true;
                     break;
 
                 case "10":
@@ -246,7 +251,7 @@ namespace ConnectFour_ConsoleClient
 
         private static void SendToServer(NetworkStream serverStream, Message message)
         {
-            string messageJson = Newtonsoft.Json.JsonConvert.SerializeObject(message);
+            string messageJson = JsonConvert.SerializeObject(message);
             BinaryWriter writer = new BinaryWriter(serverStream);
             writer.Write(messageJson);
             writer.Flush();
@@ -322,15 +327,19 @@ namespace ConnectFour_ConsoleClient
                     {
                         if (message.Winner == UserId)
                         {
-                            Console.WriteLine("Du vann");
-                            MyTurn = true;
+                            Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.CursorTop);
+                            Console.WriteLine("YOU WON!");
                         }
                         else
-                            Console.WriteLine("Du vann inte");
-                        string winnerTxt = "Press any key to continue :D";
+                        {
+                            Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.CursorTop);
+                            Console.WriteLine("YOU LOST!");
+                        }
+                        string winnerTxt = "Press the 'any' key to continue...";
                         Console.SetCursorPosition(Console.WindowWidth / 2 - (winnerTxt.Length / 2), Console.WindowHeight - 1);
                         Console.Write(winnerTxt);
                         Console.ReadKey();
+                        Console.Clear();
                         DrawMenu();
                     }
 
