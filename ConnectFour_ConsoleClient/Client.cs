@@ -17,6 +17,7 @@ namespace ConnectFour_ConsoleClient
         public Client()
         {
             MyTurn = true;
+            HasWon = false;
         }
 
         private TcpClient server;
@@ -24,6 +25,9 @@ namespace ConnectFour_ConsoleClient
         public int UserId { get; set; }
         int[,] gameBoard = new int[7, 7];
         public bool MyTurn { get; set; }
+
+        public bool HasWon { get; set; }
+        
 
         string ipAddress = "192.168.220.105";
 
@@ -166,12 +170,12 @@ namespace ConnectFour_ConsoleClient
             switch (playerInput)
             {
                 case "1":
-                    Thread.Sleep(500);
-                    if (message.Winner == 0)
+                    Thread.Sleep(50);
+                    if (!HasWon)
                     {
                         if (!MyTurn)
                         {
-                            Thread.Sleep(1000);
+                            Thread.Sleep(50);
                             Console.Write("Waiting for other player");
                         }
                         while (!MyTurn)
@@ -215,11 +219,11 @@ namespace ConnectFour_ConsoleClient
                             SetMessage(message, Command.Move, playerInput);
                         }
                     }
-                    //else
-                    //{
-                    //    Console.WriteLine("Not your turn");
-                    //    Thread.Sleep(500);
-                    //}
+                    else
+                    {
+                        GetPlayerInput("Hej LAlly xD");
+                        playerInput = Console.ReadLine();
+                    }
                     break;
                 case "4":
                     ClearMenuArea();
@@ -329,6 +333,7 @@ namespace ConnectFour_ConsoleClient
                         {
                             Console.SetCursorPosition(Console.WindowWidth / 2 - 4, Console.CursorTop);
                             Console.WriteLine("YOU WON!");
+                            HasWon = true;
                         }
                         else
                         {
