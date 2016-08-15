@@ -24,6 +24,9 @@ namespace ConnectFour_ConsoleClient
         public int UserId { get; set; }
         int[,] gameBoard = new int[7, 7];
         public bool MyTurn { get; set; }
+
+        string ipAddress = "192.168.220.105";
+
         public void Start()
         {
             #region Get local IP
@@ -41,16 +44,35 @@ namespace ConnectFour_ConsoleClient
             Console.WriteLine($"IP: {localIP}");
             #endregion
 
-            //server = new TcpClient("192.168.220.128", 5000);
-            server = new TcpClient(localIP, 5000);
-            Thread listenerThread = new Thread(Listen);
-            listenerThread.Start();
 
-            Thread senderThread = new Thread(Send);
-            senderThread.Start();
+            try
+            {
 
-            senderThread.Join();
-            listenerThread.Join();
+                //server = new TcpClient(ipAddress, 5000);
+                server = new TcpClient(localIP, 5000);
+
+                Thread listenerThread = new Thread(Listen);
+                listenerThread.Start();
+
+                Thread senderThread = new Thread(Send);
+                senderThread.Start();
+
+                senderThread.Join();
+                listenerThread.Join();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Local IP: {localIP}");
+                Console.WriteLine($"Server IP: {ipAddress}");
+
+                Console.Write("You have no connection to a server, please enter a new IP address: ");
+                ipAddress = Console.ReadLine();
+
+                Start();
+
+                Console.WriteLine(ex);
+            }
+
 
         }
 
