@@ -302,7 +302,7 @@ namespace ConnectFour_ConsoleClient
                         if (!MyTurn)
                         {
                             Thread.Sleep(50);
-                            Console.Write("Waiting for other player");
+                            Console.Write("Waiting for other player...");
                         }
 
                         if (MyTurn)
@@ -398,7 +398,7 @@ namespace ConnectFour_ConsoleClient
             Thread.Sleep(500);
             Console.Clear();
             Console.WriteLine("============CONNECT FOUR============");
-            Console.SetCursorPosition(50, 15);
+            Console.SetCursorPosition(50, 12);
             var gameBoard = JsonConvert.DeserializeObject<int[,]>(messageData);
             ConsoleColor tempForegroundColor;
             ConsoleColor tempBackgroundColor;
